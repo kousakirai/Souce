@@ -1,0 +1,8 @@
+SevenBotのコード利用するかもなんでLICENSEファイル置いときます。
+消さないでね
+
+自分用
+SevenBotのコード利用したファイルには
+hatenabot
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+を記載する

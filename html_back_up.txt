@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<html>
+    <head>
+      <title>はてな情報局認証システム</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+      <meta name="viewport" content="width-device-width, initial-scale-1">
+    </head>
+    <body>
+      <header class="page-header">
+        <h1 class="logo">はてなにゃん情報局</h1>
+      </header>
+      <h2 class="use">hcaptcha認証したあとsubmitを押してください</h2>
+    　<form class="captcha" method="post" action="/captcha?id={{id2}}">
+      {{ xcaptcha }}
+      <input type="submit" value="submit">
+      </form>
+    </body>
+</html>
+
+#この下からpython
+
+from flask import *
+import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import discord
+from flask_xcaptcha import XCaptcha
+import requests
+import json
+'''
+from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
+'''#許可次第でやる(まあサイトかな〜)
+from threading import Thread
+
+app = Flask(__name__)
+limiter = Limiter(app, key_func=get_remote_address, default_limits=["100 per minute"])
+HCAPTCHA_SITE_KEY = os.getenv("sitekey")
+HCAPTCHA_SECRET_KEY = os.getenv("secretkey")
+app.config['XCAPTCHA_SITE_KEY'] = HCAPTCHA_SITE_KEY
+app.config['XCAPTCHA_SECRET_KEY'] = HCAPTCHA_SECRET_KEY
+app.config['XCAPTCHA_VERIFY_URL'] = "https://hcaptcha.com/siteverify"
+app.config['XCAPTCHA_API_URL'] = "https://hcaptcha.com/1/api.js"
+app.config['XCAPTCHA_DIV_CLASS'] = "h-captcha"
+xcaptcha = XCaptcha(app=app)
+
+with open("auth.json", mode="r") as f:
+    auth = json.load(f)
+
+def verify(user_id):
+  rjson={
+    "user_id": user_id
+  }
+  main_content = {
+    "content": json.dumps(rjson)
+  }
+  requests.post(os.getenv("webhook_url"), main_content)
+
+@app.route('/')
+def main():
+	return f'疑問猫Botは正常です。この画面が表示されていない場合は製作者kousakirai#7423にご連絡下さい'
+
+@app.route("/captcha",methods=["POST","GET"])
+def captcha():
+  with open("auth.json", mode="r") as f:
+    auth = json.load(f)
+  _id=request.args.get('id')
+  if _id in auth["auth"]:
+    if request.method == "GET":
+      return render_template("verify.html",id2=_id)
+    elif request.method == "POST":
+      if xcaptcha.verify():
+        userid=auth["auth"][_id]
+        verify(userid)
+        return render_template("verifed.html")
+      else:
+        return "error"
+      
+  
+def run():
+	app.run(host="0.0.0.0", port=8080)
+
+
+def keep_alive():
+	server = Thread(target=run)
+	server.start()

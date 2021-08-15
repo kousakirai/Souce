@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "hatenabot"
+version = "0.1.0"
+description = ""
+authors = ["kousakirai <<>>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+discord = "^1.7.3"
+psutil = "^5.8.0"
+feedparser = "^6.0.8"
+Flask-Limiter = "^1.4"
+Flask-xCaptcha = "^0.5.2"
+tinydb = "^4.5.1"
+async-google-trans-new = "^1.4.2"
+aiofile = "^3.5.1"
+bs4 = "^0.0.1"
+gTTS = "^2.2.3"
+pytz = "^2021.1"
+youtube_dl = "^2021.6.6"
+jishaku = "^2.1.0"
+discord-debug = "^0.1.10"
+"google-translate.py" = "^1.0.0"
+PyNaCl = "^1.4.0"
+motor = "^2.5.0"
+dnspython = "^2.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
